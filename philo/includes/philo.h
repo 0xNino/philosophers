@@ -1,0 +1,55 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: 0xNino <marvin@42lausanne.ch>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/05/31 16:22:17 by 0xNino            #+#    #+#             */
+/*   Updated: 2022/06/01 21:18:09 by 0xNino           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef PHILO_H
+# define PHILO_H
+
+# include <stdlib.h>
+# include <stdio.h>
+# include <unistd.h>
+# include <pthread.h>
+# include <sys/time.h>
+# include <string.h>
+
+typedef struct s_philo
+{
+	int				id;
+	int				nb_meals;
+	int				left_fork_id;
+	int				right_fork_id;
+	int				last_meal_time;
+	pthread_t		thread_id;
+}	t_philo;
+
+typedef struct s_info
+{
+	int				nb_philo;
+	int				time_die;
+	int				time_eat;
+	int				time_sleep;
+	int				nb_meals_req;
+	int				start_time;
+	int				death;
+	int				enough;
+	t_philo			*philosophers;
+	pthread_mutex_t	*forks;
+	pthread_mutex_t	alive;
+	pthread_mutex_t	write;
+	pthread_mutex_t	meals_eaten;
+	pthread_mutex_t	time_check;
+}	t_info;
+
+
+//utils
+int	ft_atoi(const char *str);
+
+#endif

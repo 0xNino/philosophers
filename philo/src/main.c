@@ -6,14 +6,11 @@
 /*   By: 0xNino <marvin@42lausanne.ch>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 21:14:31 by 0xNino            #+#    #+#             */
-/*   Updated: 2022/05/27 15:52:20 by 0xNino           ###   ########.fr       */
+/*   Updated: 2022/06/01 21:21:49 by 0xNino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <pthread.h>
+#include "../includes/philo.h"
 
 static int	error(char *errmsg, int errnum)
 {
@@ -52,9 +49,22 @@ static int	check_args(int argc, char **argv)
 	return (0);
 }
 
+static void	init_info(char **argv, t_info *info)
+{
+	info->nb_philo = ft_atoi(argv[1]);
+	info->time_die = ft_atoi(argv[2]);
+	info->time_eat = ft_atoi(argv[3]);
+	info->time_sleep = ft_atoi(argv[4]);
+	if (argv[5])
+		info->nb_meals_req = ft_atoi(argv[5]);
+}
+
 int	main(int argc, char **argv)
 {
+	t_info	info;
+
 	if (check_args(argc, argv))
 		return (1);
+	init_info(argv, &info);
 	return (0);
 }
