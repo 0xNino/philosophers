@@ -6,7 +6,7 @@
 /*   By: 0xNino <marvin@42lausanne.ch>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/31 16:22:17 by 0xNino            #+#    #+#             */
-/*   Updated: 2022/06/01 21:18:09 by 0xNino           ###   ########.fr       */
+/*   Updated: 2022/06/03 13:30:36 by 0xNino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <string.h>
+
+# define SUCCESS 0
+# define FAILURE 1
 
 typedef struct s_philo
 {
@@ -40,14 +43,13 @@ typedef struct s_info
 	int				start_time;
 	int				death;
 	int				enough;
-	t_philo			*philosophers;
+	t_philo			*philos;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	alive;
 	pthread_mutex_t	write;
 	pthread_mutex_t	meals_eaten;
 	pthread_mutex_t	time_check;
 }	t_info;
-
 
 //utils
 int	ft_atoi(const char *str);
