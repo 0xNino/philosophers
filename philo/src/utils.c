@@ -37,3 +37,15 @@ int	ft_atoi(const char *str)
 		return ((int)-nbr);
 	return ((int)nbr);
 }
+
+long	ft_time()
+{
+
+}
+
+void	ft_usleep(int ms)
+{
+	long	start_time;
+
+	start_time = time
+}

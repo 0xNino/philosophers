@@ -60,9 +60,11 @@ static int	init_info(char **argv, t_info *info)
 	else
 		info->nb_meals_req = 0;
 	info->philos = malloc (sizeof(t_philo) * info->nb_philo);
+	if (!info->philos)
+		return (error("Error: philos malloc failed\n", FAILURE));
 	info->death = 0;
 	info->enough = 0;
-	if (info->nb_philo < 1 || info->nb_philo > 200)
+	if (info->nb_philo < 1 || info->nb_philo > 250)
 		return (error("Error: invalid philosopher count\n", FAILURE));
 	if (info->time_die < 0 || info->time_eat < 0 || info->time_sleep < 0)
 		return (error("Error: invalid time values\n", FAILURE));
@@ -71,7 +73,11 @@ static int	init_info(char **argv, t_info *info)
 	return (SUCCESS);
 }
 
-static int	init_philos(char **argv, t_info *info)
+void	routine(t_philo *philos)
+{
+}
+
+static int	init_mutex(char **argv, t_info *info)
 {
 	int	i;
 
@@ -81,10 +87,29 @@ static int	init_philos(char **argv, t_info *info)
 		info->philos[i].id = i + 1;
 		info->philos[i].nb_meals = 0;
 		info->philos[i].last_meal_time = 0;
-
-
-
+		pthread_create(&info->philos[i].thread_id, NULL, routine, info);
 	}
+}
+
+static int	init_forks(char **argv, t_info *info)
+{
+	int				i;
+	pthread_mutex_t	*mutexes;
+
+	i = -1;
+	mutexes = malloc (sizeof(pthread_mutex_t) * info->nb_philo);
+	if (!mutexes)
+		return (error("Error: mutexes malloc failed\n", FAILURE));
+	while (++i < info->nb_philo)
+		pthread_mutex_init(&mutexes[i], NULL);
+	info->forks = mutexes;
+	pthread_mutex_init(&info->write, NULL);
+	return (SUCCESS);
+}
+
+static int	init_philo()
+{
+
 }
 
 int	main(int argc, char **argv)
@@ -95,6 +120,8 @@ int	main(int argc, char **argv)
 	if (check_args(argc, argv))
 		return (FAILURE);
 	if (init_info(argv, &info))
+		return (FAILURE);
+	if (init_mutex(argv, &info))
 		return (FAILURE);
 	return (SUCCESS);
 }

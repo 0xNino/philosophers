@@ -29,7 +29,8 @@ typedef struct s_philo
 	int				nb_meals;
 	int				left_fork_id;
 	int				right_fork_id;
-	int				last_meal_time;
+	long			last_meal_time;
+	struct s_info	*info;
 	pthread_t		thread_id;
 }	t_philo;
 
@@ -40,15 +41,15 @@ typedef struct s_info
 	int				time_eat;
 	int				time_sleep;
 	int				nb_meals_req;
-	int				start_time;
 	int				death;
 	int				enough;
-	t_philo			*philos;
-	pthread_mutex_t	*forks;
+	long			start_time;
 	pthread_mutex_t	alive;
 	pthread_mutex_t	write;
 	pthread_mutex_t	meals_eaten;
 	pthread_mutex_t	time_check;
+	pthread_mutex_t	*forks;
+	t_philo			*philos;
 }	t_info;
 
 //utils
