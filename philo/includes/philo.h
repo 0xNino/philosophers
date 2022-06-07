@@ -44,11 +44,11 @@ typedef struct s_info
 	int				death;
 	int				enough;
 	long			start_time;
+	pthread_mutex_t	*forks;
 	pthread_mutex_t	alive;
 	pthread_mutex_t	write;
 	pthread_mutex_t	meals_eaten;
 	pthread_mutex_t	time_check;
-	pthread_mutex_t	*forks;
 	t_philo			*philos;
 }	t_info;
 

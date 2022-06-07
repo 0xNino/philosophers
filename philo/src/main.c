@@ -73,11 +73,7 @@ static int	init_info(char **argv, t_info *info)
 	return (SUCCESS);
 }
 
-void	routine(t_philo *philos)
-{
-}
-
-static int	init_mutex(char **argv, t_info *info)
+static int	init_philo(t_info *info)
 {
 	int	i;
 
@@ -86,12 +82,14 @@ static int	init_mutex(char **argv, t_info *info)
 	{
 		info->philos[i].id = i + 1;
 		info->philos[i].nb_meals = 0;
+		info->philos[i].left_fork_id = i;
+		info->philos[i].right_fork_id = (i + 1) % info->nb_philo;
 		info->philos[i].last_meal_time = 0;
-		pthread_create(&info->philos[i].thread_id, NULL, routine, info);
+		info->philos[i].info = info;
 	}
 }
 
-static int	init_forks(char **argv, t_info *info)
+static int	init_mutex(t_info *info)
 {
 	int				i;
 	pthread_mutex_t	*mutexes;
@@ -101,15 +99,34 @@ static int	init_forks(char **argv, t_info *info)
 	if (!mutexes)
 		return (error("Error: mutexes malloc failed\n", FAILURE));
 	while (++i < info->nb_philo)
-		pthread_mutex_init(&mutexes[i], NULL);
+		if (pthread_mutex_init(&mutexes[i], NULL))
+			return (error("Error: mutex init failed\n", FAILURE));
 	info->forks = mutexes;
-	pthread_mutex_init(&info->write, NULL);
+	if (pthread_mutex_init(&info->write, NULL))
+		return (error("Error: mutex init failed\n", FAILURE));
+	if (pthread_mutex_init(&info->alive, NULL))
+		return (error("Error: mutex init failed\n", FAILURE));
+	if (pthread_mutex_init(&info->meals_eaten, NULL))
+		return (error("Error: mutex init failed\n", FAILURE));
+	if (pthread_mutex_init(&info->time_check, NULL))
+		return (error("Error: mutex init failed\n", FAILURE));
 	return (SUCCESS);
 }
 
-static int	init_philo()
+static long	ft_time(void)
 {
+	struct timeval	tv;
 
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+static int	init_thread(t_info *info)
+{
+	int	i;
+
+	info->start_time = ft_time();
+	return (SUCCESS);
 }
 
 int	main(int argc, char **argv)
@@ -121,7 +138,9 @@ int	main(int argc, char **argv)
 		return (FAILURE);
 	if (init_info(argv, &info))
 		return (FAILURE);
-	if (init_mutex(argv, &info))
+	if (init_philo(&info))
+		return (FAILURE);
+	if (init_mutex(&info))
 		return (FAILURE);
 	return (SUCCESS);
 }
