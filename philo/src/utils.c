@@ -38,14 +38,18 @@ int	ft_atoi(const char *str)
 	return ((int)nbr);
 }
 
-long	ft_time()
+long	ft_time(void)
 {
+	struct timeval	tv;
 
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
-
+/*
 void	ft_usleep(int ms)
 {
 	long	start_time;
 
 	start_time = time
 }
+*/

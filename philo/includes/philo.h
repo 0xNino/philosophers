@@ -19,9 +19,12 @@
 # include <pthread.h>
 # include <sys/time.h>
 # include <string.h>
+# include <errno.h>
 
 # define SUCCESS 0
 # define FAILURE 1
+# define TRUE 0
+# define FALSE 1
 
 typedef struct s_philo
 {
@@ -53,6 +56,7 @@ typedef struct s_info
 }	t_info;
 
 //utils
-int	ft_atoi(const char *str);
+int		ft_atoi(const char *str);
+long	ft_time(void);
 
 #endif

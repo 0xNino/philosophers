@@ -38,12 +38,12 @@ static int	check_args(int argc, char **argv)
 	int	i;
 
 	if (argc < 5 || argc > 6)
-		return (error("Error: wrong argument count\n", 1));
+		return (error("Error: wrong argument count\n", FAILURE));
 	i = 1;
 	while (i < argc)
 	{
 		if (isnumber(argv[i]) == FAILURE)
-			return (error("Error: invalid arguments\n", 1));
+			return (error("Error: invalid arguments\n", FAILURE));
 		i++;
 	}
 	return (SUCCESS);
@@ -68,7 +68,7 @@ static int	init_info(char **argv, t_info *info)
 		return (error("Error: invalid philosopher count\n", FAILURE));
 	if (info->time_die < 0 || info->time_eat < 0 || info->time_sleep < 0)
 		return (error("Error: invalid time values\n", FAILURE));
-	if (info->nb_meals_req <= 0)
+	if (info->nb_meals_req < 0)
 		return (error("Error: invalid required meal count\n", FAILURE));
 	return (SUCCESS);
 }
@@ -87,6 +87,7 @@ static int	init_philo(t_info *info)
 		info->philos[i].last_meal_time = 0;
 		info->philos[i].info = info;
 	}
+	return (SUCCESS);
 }
 
 static int	init_mutex(t_info *info)
@@ -113,19 +114,91 @@ static int	init_mutex(t_info *info)
 	return (SUCCESS);
 }
 
-static long	ft_time(void)
+static void	*one_philo(t_info *info)
 {
-	struct timeval	tv;
+	(void)info; //!
+	return (NULL);
+}
 
-	gettimeofday(&tv, NULL);
-	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+static int	check_death(t_info *info)
+{
+	int	exit;
+
+	exit = FALSE;
+	pthread_mutex_lock(&info->alive);
+	if (info->death)
+		exit = TRUE;
+	pthread_mutex_unlock(&info->alive);
+	return (exit);
+}
+static void	print(t_info *info, int philo_id, char *msg)
+{
+	pthread_mutex_lock(&info->write);
+	if (check_death(info))
+		printf("%li %d %s\n", ft_time() - info->start_time, philo_id, msg);
+	pthread_mutex_lock(&info->write);
+}
+
+static void	philo_sleep(t_info *info, long time)
+{
+	long	i;
+
+	i = ft_time();
+	while(check_death(info))
+	{
+		if (ft_time() - i >= time)
+			break ;
+		usleep(50);
+	}
+}
+
+static void	philo_meal(t_info *info, t_philo *philo)
+{
+	pthread_mutex_lock(&info->forks[philo->left_fork_id]);
+	print(info, philo->id, "has taken a fork");
+	pthread_mutex_lock(&info->forks[philo->right_fork_id]);
+	print(info, philo->id, "has taken a fork");
+	pthread_mutex_lock(&info->time_check);
+	philo->last_meal_time = ft_time();
+	pthread_mutex_unlock(&info->time_check);
+	print(info, philo->id, "is eating");
+	philo_sleep(info, info->time_eat)
+	pthread_mutex_unlock(&info->forks[philo->left_fork_id]);
+	pthread_mutex_unlock(&info->forks[philo->right_fork_id]);
+}
+
+static void	*start_routine(void *void_philo)
+{
+	t_philo *philo;
+	t_info	*info;
+
+	philo = (t_philo *) void_philo;
+	info = philo->info;
+	if (info->nb_philo == 1)
+		return (one_philo(info));
+	if (philo->id % 2)
+		usleep(info->time_die + 50);
+	while (check_death(info))
+	{
+		philo_meal(info, philo);
+	}
+	return (SUCCESS);
 }
 
 static int	init_thread(t_info *info)
 {
 	int	i;
 
+	i = -1;
 	info->start_time = ft_time();
+	while (++i < info->nb_philo)
+	{
+		if(pthread_create(&info->philos[i].thread_id, NULL, start_routine, &info->philos[i]))
+			return (error("Error: phtread_create failed\n", FAILURE));
+		pthread_mutex_lock(&info->time_check);
+		info->philos[i].last_meal_time = ft_time();
+		pthread_mutex_unlock(&info->time_check);
+	}
 	return (SUCCESS);
 }
 
@@ -134,6 +207,7 @@ int	main(int argc, char **argv)
 	t_info	info;
 	t_philo	philo;
 	
+	(void) philo; //!
 	if (check_args(argc, argv))
 		return (FAILURE);
 	if (init_info(argv, &info))
@@ -141,6 +215,8 @@ int	main(int argc, char **argv)
 	if (init_philo(&info))
 		return (FAILURE);
 	if (init_mutex(&info))
+		return (FAILURE);
+	if (init_thread(&info))
 		return (FAILURE);
 	return (SUCCESS);
 }
