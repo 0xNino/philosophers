@@ -80,7 +80,7 @@ static int	init_philo(t_info *info)
 	i = -1;
 	while (++i < info->nb_philo)
 	{
-		info->philos[i].id = i + 1;
+		info->philos[i].id = i;
 		info->philos[i].nb_meals = 0;
 		info->philos[i].left_fork_id = i;
 		info->philos[i].right_fork_id = (i + 1) % info->nb_philo;
@@ -117,6 +117,7 @@ static int	init_mutex(t_info *info)
 static void	*one_philo(t_info *info)
 {
 	(void)info; //!
+	printf("one philo\n");
 	return (NULL);
 }
 
@@ -135,7 +136,7 @@ static void	print(t_info *info, int philo_id, char *msg)
 {
 	pthread_mutex_lock(&info->write);
 	if (check_death(info))
-		printf("%li %d %s\n", ft_time() - info->start_time, philo_id, msg);
+		printf("%li %d %s\n", ft_time() - info->start_time, philo_id + 1, msg);
 	pthread_mutex_lock(&info->write);
 }
 
@@ -162,9 +163,12 @@ static void	philo_meal(t_info *info, t_philo *philo)
 	philo->last_meal_time = ft_time();
 	pthread_mutex_unlock(&info->time_check);
 	print(info, philo->id, "is eating");
-	philo_sleep(info, info->time_eat)
+	philo_sleep(info, info->time_eat);
 	pthread_mutex_unlock(&info->forks[philo->left_fork_id]);
 	pthread_mutex_unlock(&info->forks[philo->right_fork_id]);
+	pthread_mutex_lock(&info->meals_eaten);
+	philo->nb_meals++;
+	pthread_mutex_unlock(&info->meals_eaten);
 }
 
 static void	*start_routine(void *void_philo)
@@ -181,6 +185,16 @@ static void	*start_routine(void *void_philo)
 	while (check_death(info))
 	{
 		philo_meal(info, philo);
+		pthread_mutex_lock(&info->meals_eaten);
+		if (info->enough)
+		{
+			pthread_mutex_unlock(&info->meals_eaten);
+			break ;
+		}
+		pthread_mutex_unlock(&info->meals_eaten);
+		print(info, info->philos->id, "is sleeping");
+		philo_sleep(info, info->time_sleep);
+		print(info, info->philos->id, "is thinking");
 	}
 	return (SUCCESS);
 }
