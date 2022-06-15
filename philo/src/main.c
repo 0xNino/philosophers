@@ -93,16 +93,14 @@ static int	init_philo(t_info *info)
 static int	init_mutex(t_info *info)
 {
 	int				i;
-	pthread_mutex_t	*mutexes;
 
 	i = -1;
-	mutexes = malloc (sizeof(pthread_mutex_t) * info->nb_philo);
-	if (!mutexes)
-		return (error("Error: mutexes malloc failed\n", FAILURE));
+	info->forks = malloc (sizeof(pthread_mutex_t) * info->nb_philo);
+	if (!info->forks)
+		return (error("Error: info->forks malloc failed\n", FAILURE));
 	while (++i < info->nb_philo)
-		if (pthread_mutex_init(&mutexes[i], NULL))
+		if (pthread_mutex_init(&info->forks[i], NULL))
 			return (error("Error: mutex init failed\n", FAILURE));
-	info->forks = mutexes;
 	if (pthread_mutex_init(&info->write, NULL))
 		return (error("Error: mutex init failed\n", FAILURE));
 	if (pthread_mutex_init(&info->alive, NULL))
@@ -137,7 +135,7 @@ static void	print(t_info *info, int philo_id, char *msg)
 	pthread_mutex_lock(&info->write);
 	if (check_death(info))
 		printf("%li %d %s\n", ft_time() - info->start_time, philo_id + 1, msg);
-	pthread_mutex_lock(&info->write);
+	pthread_mutex_unlock(&info->write);
 }
 
 static void	philo_sleep(t_info *info, long time)
@@ -198,8 +196,73 @@ static void	*start_routine(void *void_philo)
 	}
 	return (SUCCESS);
 }
+static int	check_enough(t_info *info)
+{
+	int	i;
 
-static int	init_thread(t_info *info)
+	i = 0;
+	pthread_mutex_lock(&info->meals_eaten);
+	while (info->nb_meals_req > 0 && i < info->nb_philo && info->philos[i].nb_meals >= info->nb_meals_req)
+		i++;
+	if (i == info->nb_philo)
+		info->enough = 1;
+	pthread_mutex_unlock(&info->meals_eaten);
+	return (SUCCESS);
+}
+
+static int	death_monitor(t_info *info, t_philo *philo)
+{
+	int	i;
+
+	i = -1;
+	while(!info->enough)
+	{
+		while (++i < info->nb_philo && check_death(info))
+		{
+			pthread_mutex_lock(&info->time_check);
+			if ((ft_time() - philo->last_meal_time) > info->time_die)
+			{
+				print(info, philo->id, "has died");
+				pthread_mutex_lock(&info->alive);
+				info->death = 1;
+				pthread_mutex_unlock(&info->alive);
+			}
+			pthread_mutex_unlock(&info->time_check);
+			usleep(50);
+		}
+		if (info->death)
+			break ;
+		check_enough(info);
+	}
+	return (SUCCESS);
+}
+static int	exit_threads(t_info *info)
+{
+	int	i;
+
+	i = -1;
+	while (++i < info->nb_philo)
+		pthread_join(info->philos[i].thread_id, NULL);
+	free(info->philos);
+	return (SUCCESS);
+}
+
+static int	destroy_mutexes(t_info *info)
+{
+	int	i;
+
+	i = -1;
+	while (++i < info->nb_philo)
+		pthread_mutex_destroy(&info->forks[i]);
+	pthread_mutex_destroy(&info->alive);
+	pthread_mutex_destroy(&info->meals_eaten);
+	pthread_mutex_destroy(&info->time_check);
+	pthread_mutex_destroy(&info->write);
+	free(info->forks);
+	return (SUCCESS);
+}
+
+static int	philo(t_info *info)
 {
 	int	i;
 
@@ -213,15 +276,16 @@ static int	init_thread(t_info *info)
 		info->philos[i].last_meal_time = ft_time();
 		pthread_mutex_unlock(&info->time_check);
 	}
+	death_monitor(info, info->philos);
+	exit_threads(info);
+	destroy_mutexes(info);
 	return (SUCCESS);
 }
 
 int	main(int argc, char **argv)
 {
 	t_info	info;
-	t_philo	philo;
-	
-	(void) philo; //!
+
 	if (check_args(argc, argv))
 		return (FAILURE);
 	if (init_info(argv, &info))
@@ -230,7 +294,7 @@ int	main(int argc, char **argv)
 		return (FAILURE);
 	if (init_mutex(&info))
 		return (FAILURE);
-	if (init_thread(&info))
+	if (philo(&info))
 		return (FAILURE);
 	return (SUCCESS);
 }
