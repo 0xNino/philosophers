@@ -6,37 +6,11 @@
 /*   By: 0xNino <marvin@42lausanne.ch>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/01 20:54:31 by 0xNino            #+#    #+#             */
-/*   Updated: 2022/06/01 21:00:22 by 0xNino           ###   ########.fr       */
+/*   Updated: 2022/06/16 09:41:31 by 0xNino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
-
-int	ft_atoi(const char *str)
-{
-	long	nbr;
-	int		minus;
-
-	nbr = 0;
-	minus = 0;
-	while ((9 <= *str && *str <= 13) || *str == 32)
-		str++;
-	if (*str == '+' || *str == '-')
-		if (*str++ == '-')
-			minus = 1;
-	while ('0' <= *str && *str <= '9')
-	{
-		if ((nbr > (__LONG_MAX__ - *str + '0') / 10) && minus)
-			return (0);
-		if ((nbr > (__LONG_MAX__ - *str + '0') / 10) && !minus)
-			return (-1);
-		nbr = 10 * nbr + (*str - '0');
-		str++;
-	}
-	if (minus)
-		return ((int)-nbr);
-	return ((int)nbr);
-}
 
 long	ft_time(void)
 {
@@ -45,11 +19,40 @@ long	ft_time(void)
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
-/*
-void	ft_usleep(int ms)
-{
-	long	start_time;
 
-	start_time = time
+int	error(char *errmsg, int errnum)
+{
+	printf("%s", errmsg);
+	return (errnum);
 }
-*/
+
+static int	isnumber(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if ('0' <= str[i] && str[i] <= '9')
+			i++;
+		else
+			return (FAILURE);
+	}
+	return (SUCCESS);
+}
+
+int	check_args(int argc, char **argv)
+{
+	int	i;
+
+	if (argc < 5 || argc > 6)
+		return (error("Error: wrong argument count\n", FAILURE));
+	i = 1;
+	while (i < argc)
+	{
+		if (isnumber(argv[i]) == FAILURE)
+			return (error("Error: invalid arguments\n", FAILURE));
+		i++;
+	}
+	return (SUCCESS);
+}

@@ -6,7 +6,7 @@
 /*   By: 0xNino <marvin@42lausanne.ch>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/31 16:22:17 by 0xNino            #+#    #+#             */
-/*   Updated: 2022/06/03 13:30:36 by 0xNino           ###   ########.fr       */
+/*   Updated: 2022/06/16 09:40:57 by 0xNino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,28 @@ typedef struct s_info
 	t_philo			*philos;
 }	t_info;
 
-//utils
-int		ft_atoi(const char *str);
+// check.c
+int		check_death(t_info *info);
+int		check_enough(t_info *info);
+
+// end.c
+int		end_threads(t_info *info);
+int		end_mutexes(t_info *info);
+
+// init.c
+int		init_info(char **argv, t_info *info);
+int		init_philo(t_info *info);
+int		init_mutex(t_info *info);
+
+// philo_utils.c
+void	print(t_info *info, int philo_id, char *msg);
+void	philo_sleep(t_info *info, long time);
+void	philo_meal(t_info *info, t_philo *philo);
+int		death_monitor(t_info *info, t_philo *philo);
+
+// utils.c
 long	ft_time(void);
+int		error(char *errmsg, int errnum);
+int		check_args(int argc, char **argv);
 
 #endif
