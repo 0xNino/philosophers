@@ -69,13 +69,12 @@ int		init_philo(t_info *info);
 int		init_mutex(t_info *info);
 
 // philo_utils.c
-void	print(t_info *info, int philo_id, char *msg);
+void	philo_print(t_info *info, int id, char *msg, int fork_id);
 void	philo_sleep(t_info *info, long time);
 void	philo_meal(t_info *info, t_philo *philo);
-int		death_monitor(t_info *info, t_philo *philo);
+long	philo_time(void);
 
 // utils.c
-long	ft_time(void);
 int		error(char *errmsg, int errnum);
 int		check_args(int argc, char **argv);
 

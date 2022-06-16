@@ -19,6 +19,8 @@ static void	*routine(void *void_philo)
 
 	philo = (t_philo *) void_philo;
 	info = philo->info;
+	if (info->nb_philo == 1)
+		return (SUCCESS);
 	if (philo->id % 2)
 		usleep(info->time_sleep + 50);
 	while (check_death(info))
@@ -31,9 +33,9 @@ static void	*routine(void *void_philo)
 			break ;
 		}
 		pthread_mutex_unlock(&info->meals_eaten);
-		print(info, info->philos->id, "is sleeping");
+		philo_print(info, info->philos->id, "is sleeping", -1);
 		philo_sleep(info, info->time_sleep);
-		print(info, info->philos->id, "is thinking");
+		philo_print(info, info->philos->id, "is thinking", -1);
 	}
 	return (SUCCESS);
 }
@@ -45,11 +47,38 @@ static int	one_philo(t_info *info)
 	philo = info->philos[0];
 	if (pthread_create(&philo.thread_id, NULL, routine, &philo))
 		return (error("Error: phtread_create failed\n", FAILURE));
-	print(info, 0, "has taken a fork");
+	philo_print(info, 0, "has taken the fork", philo.left_fork_id);
 	philo_sleep(info, info->time_die);
-	print(info, 0, "has died");
+	philo_print(info, 0, "has died", -1);
 	end_threads(info);
 	end_mutexes(info);
+	return (SUCCESS);
+}
+
+static int	death_monitor(t_info *info, t_philo *philo)
+{
+	int	i;
+
+	i = -1;
+	while (!info->enough)
+	{
+		while (++i < info->nb_philo && check_death(info))
+		{
+			pthread_mutex_lock(&info->time_check);
+			if ((philo_time() - philo->last_meal_time) > info->time_die)
+			{
+				philo_print(info, philo->id, "has died", -1);
+				pthread_mutex_lock(&info->alive);
+				info->death = 1;
+				pthread_mutex_unlock(&info->alive);
+			}
+			pthread_mutex_unlock(&info->time_check);
+			usleep(50);
+		}
+		if (info->death)
+			break ;
+		check_enough(info);
+	}
 	return (SUCCESS);
 }
 
@@ -60,7 +89,7 @@ static int	philo(t_info *info)
 
 	i = -1;
 	philos = info->philos;
-	info->start_time = ft_time();
+	info->start_time = philo_time();
 	if (info->nb_philo == 1)
 		return (one_philo(info));
 	while (++i < info->nb_philo)
@@ -68,7 +97,7 @@ static int	philo(t_info *info)
 		if (pthread_create(&philos[i].thread_id, NULL, routine, &philos[i]))
 			return (error("Error: phtread_create failed\n", FAILURE));
 		pthread_mutex_lock(&info->time_check);
-		info->philos[i].last_meal_time = ft_time();
+		info->philos[i].last_meal_time = philo_time();
 		pthread_mutex_unlock(&info->time_check);
 	}
 	death_monitor(info, info->philos);

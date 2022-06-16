@@ -12,14 +12,6 @@
 
 #include "../includes/philo.h"
 
-long	ft_time(void)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
-}
-
 int	error(char *errmsg, int errnum)
 {
 	printf("%s", errmsg);
