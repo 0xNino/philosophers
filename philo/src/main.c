@@ -22,7 +22,7 @@ static void	*routine(void *void_philo)
 	if (info->nb_philo == 1)
 		return (SUCCESS);
 	if (philo->id % 2)
-		usleep(info->time_sleep + 50);
+		philo_sleep(info, 50);
 	while (check_death(info))
 	{
 		philo_meal(info, philo);
@@ -65,15 +65,17 @@ static int	death_monitor(t_info *info, t_philo *philo)
 		while (++i < info->nb_philo && check_death(info))
 		{
 			pthread_mutex_lock(&info->time_check);
+//			printf("philo_time = %li, last meal = %li, time check = %li\n", philo_time(), philo->last_meal_time, philo_time() - philo->last_meal_time);
 			if ((philo_time() - philo->last_meal_time) > info->time_die)
 			{
+//				printf("!!!! start has died\n");
 				philo_print(info, philo->id, "has died", -1);
 				pthread_mutex_lock(&info->alive);
 				info->death = 1;
 				pthread_mutex_unlock(&info->alive);
 			}
 			pthread_mutex_unlock(&info->time_check);
-			usleep(50);
+			philo_sleep(info, 10);
 		}
 		if (info->death)
 			break ;
@@ -97,7 +99,7 @@ static int	philo(t_info *info)
 		if (pthread_create(&philos[i].thread_id, NULL, routine, &philos[i]))
 			return (error("Error: phtread_create failed\n", FAILURE));
 		pthread_mutex_lock(&info->time_check);
-		info->philos[i].last_meal_time = philo_time();
+		philos[i].last_meal_time = philo_time();
 		pthread_mutex_unlock(&info->time_check);
 	}
 	death_monitor(info, info->philos);

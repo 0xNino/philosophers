@@ -18,9 +18,9 @@ void	philo_print(t_info *info, int id, char *msg, int number)
 	if (check_death(info))
 	{
 		if (number >= 0)
-			printf("%li\t%d %s #%d\n", philo_time() - info->start_time, id + 1, msg, number);
+			printf("%5li %3d %s #%d\n", philo_time() - info->start_time, id + 1, msg, number);
 		else
-			printf("%li\t%d %s\n", philo_time() - info->start_time, id + 1, msg);
+			printf("%5li %3d %s\n", philo_time() - info->start_time, id + 1, msg);
 	}
 	pthread_mutex_unlock(&info->write);
 }
@@ -34,7 +34,7 @@ void	philo_sleep(t_info *info, long time)
 	{
 		if (philo_time() - i >= time)
 			break ;
-		usleep(50);
+		usleep(10);
 	}
 }
 
