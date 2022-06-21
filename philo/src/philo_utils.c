@@ -6,7 +6,7 @@
 /*   By: 0xNino <marvin@42lausanne.ch>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 08:50:53 by 0xNino            #+#    #+#             */
-/*   Updated: 2022/06/21 16:22:31 by 0xNino           ###   ########.fr       */
+/*   Updated: 2022/06/21 16:37:47 by 0xNino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,4 +49,10 @@ long	philo_time(void)
 
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+int	philo_error(char *errmsg, int errnum)
+{
+	printf("%s", errmsg);
+	return (errnum);
 }

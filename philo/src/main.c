@@ -6,7 +6,7 @@
 /*   By: 0xNino <marvin@42lausanne.ch>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 21:14:31 by 0xNino            #+#    #+#             */
-/*   Updated: 2022/06/21 16:12:14 by 0xNino           ###   ########.fr       */
+/*   Updated: 2022/06/21 16:37:33 by 0xNino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static int	one_philo(t_info *info)
 
 	philo = info->philos[0];
 	if (pthread_create(&philo.thread_id, NULL, routine, &philo))
-		return (error("Error: phtread_create failed\n", FAILURE));
+		return (philo_error("Error: phtread_create failed\n", FAILURE));
 	print_fork(info, &philo, philo.left_fork_id);
 	philo_sleep(info, info->time_die);
 	print_death(info, &philo);
@@ -96,7 +96,7 @@ static int	philo(t_info *info)
 	while (++i < info->nb_philo)
 	{
 		if (pthread_create(&philos[i].thread_id, NULL, routine, &philos[i]))
-			return (error("Error: phtread_create failed\n", FAILURE));
+			return (philo_error("Error: phtread_create failed\n", FAILURE));
 		pthread_mutex_lock(&info->time_check);
 		philos[i].last_meal_time = philo_time();
 		pthread_mutex_unlock(&info->time_check);

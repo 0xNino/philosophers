@@ -6,7 +6,7 @@
 /*   By: 0xNino <marvin@42lausanne.ch>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/31 16:22:17 by 0xNino            #+#    #+#             */
-/*   Updated: 2022/06/21 16:29:47 by 0xNino           ###   ########.fr       */
+/*   Updated: 2022/06/21 16:38:13 by 0xNino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ typedef struct s_info
 }	t_info;
 
 // check.c
+int		check_args(int argc, char **argv);
 int		check_death(t_info *info);
 int		check_enough(t_info *info);
 
@@ -84,6 +85,7 @@ int		init_mutex(t_info *info);
 void	philo_sleep(t_info *info, long time);
 void	philo_meal(t_info *info, t_philo *philo);
 long	philo_time(void);
+int		philo_error(char *errmsg, int errnum);
 
 // print.c
 void	print_death(t_info *info, t_philo *philo);
@@ -91,9 +93,5 @@ void	print_think(t_info *info, t_philo *philo);
 void	print_sleep(t_info *info, t_philo *philo);
 void	print_fork(t_info *info, t_philo *philo, int count);
 void	print_meal(t_info *info, t_philo *philo, int count);
-
-// utils.c
-int		error(char *errmsg, int errnum);
-int		check_args(int argc, char **argv);
 
 #endif

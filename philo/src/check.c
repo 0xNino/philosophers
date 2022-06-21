@@ -6,11 +6,42 @@
 /*   By: 0xNino <marvin@42lausanne.ch>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/16 08:49:21 by 0xNino            #+#    #+#             */
-/*   Updated: 2022/06/16 08:53:40 by 0xNino           ###   ########.fr       */
+/*   Updated: 2022/06/21 16:38:21 by 0xNino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
+
+static int	isnumber(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if ('0' <= str[i] && str[i] <= '9')
+			i++;
+		else
+			return (FAILURE);
+	}
+	return (SUCCESS);
+}
+
+int	check_args(int argc, char **argv)
+{
+	int	i;
+
+	if (argc < 5 || argc > 6)
+		return (philo_error("Error: wrong argument count\n", FAILURE));
+	i = 1;
+	while (i < argc)
+	{
+		if (isnumber(argv[i]) == FAILURE)
+			return (philo_error("Error: invalid arguments\n", FAILURE));
+		i++;
+	}
+	return (SUCCESS);
+}
 
 int	check_death(t_info *info)
 {
