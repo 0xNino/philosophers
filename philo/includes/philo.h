@@ -6,7 +6,7 @@
 /*   By: 0xNino <marvin@42lausanne.ch>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/31 16:22:17 by 0xNino            #+#    #+#             */
-/*   Updated: 2022/06/16 09:40:57 by 0xNino           ###   ########.fr       */
+/*   Updated: 2022/06/21 16:29:47 by 0xNino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,18 @@
 # define FAILURE 1
 # define TRUE 0
 # define FALSE 1
+
+# define DEFAULT "\001\033[0;39m\002"
+# define GRAY "\001\033[1;90m\002"
+# define RED "\001\033[1;91m\002"
+# define GREEN "\001\033[1;92m\002"
+# define YELLOW "\001\033[1;93m\002"
+# define BLUE "\001\033[1;94m\002"
+# define MAGENTA "\001\033[1;95m\002"
+# define CYAN "\001\033[1;96m\002"
+# define WHITE "\001\033[0;97m\002"
+
+# define DASH "---------------------------------------------------------------"
 
 typedef struct s_philo
 {
@@ -69,10 +81,16 @@ int		init_philo(t_info *info);
 int		init_mutex(t_info *info);
 
 // philo_utils.c
-void	philo_print(t_info *info, int id, char *msg, int fork_id);
 void	philo_sleep(t_info *info, long time);
 void	philo_meal(t_info *info, t_philo *philo);
 long	philo_time(void);
+
+// print.c
+void	print_death(t_info *info, t_philo *philo);
+void	print_think(t_info *info, t_philo *philo);
+void	print_sleep(t_info *info, t_philo *philo);
+void	print_fork(t_info *info, t_philo *philo, int count);
+void	print_meal(t_info *info, t_philo *philo, int count);
 
 // utils.c
 int		error(char *errmsg, int errnum);

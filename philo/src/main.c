@@ -6,7 +6,7 @@
 /*   By: 0xNino <marvin@42lausanne.ch>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 21:14:31 by 0xNino            #+#    #+#             */
-/*   Updated: 2022/06/16 09:43:57 by 0xNino           ###   ########.fr       */
+/*   Updated: 2022/06/21 16:12:14 by 0xNino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,9 @@ static void	*routine(void *void_philo)
 			break ;
 		}
 		pthread_mutex_unlock(&info->meals_eaten);
-		philo_print(info, info->philos->id, "is sleeping", -1);
+		print_sleep(info, philo);
 		philo_sleep(info, info->time_sleep);
-		philo_print(info, info->philos->id, "is thinking", -1);
+		print_think(info, philo);
 	}
 	return (SUCCESS);
 }
@@ -47,9 +47,9 @@ static int	one_philo(t_info *info)
 	philo = info->philos[0];
 	if (pthread_create(&philo.thread_id, NULL, routine, &philo))
 		return (error("Error: phtread_create failed\n", FAILURE));
-	philo_print(info, 0, "has taken the fork", philo.left_fork_id);
+	print_fork(info, &philo, philo.left_fork_id);
 	philo_sleep(info, info->time_die);
-	philo_print(info, 0, "has died", -1);
+	print_death(info, &philo);
 	end_threads(info);
 	end_mutexes(info);
 	return (SUCCESS);
@@ -59,17 +59,15 @@ static int	death_monitor(t_info *info, t_philo *philo)
 {
 	int	i;
 
-	i = -1;
 	while (!info->enough)
 	{
+		i = -1;
 		while (++i < info->nb_philo && check_death(info))
 		{
 			pthread_mutex_lock(&info->time_check);
-//			printf("philo_time = %li, last meal = %li, time check = %li\n", philo_time(), philo->last_meal_time, philo_time() - philo->last_meal_time);
 			if ((philo_time() - philo->last_meal_time) > info->time_die)
 			{
-//				printf("!!!! start has died\n");
-				philo_print(info, philo->id, "has died", -1);
+				print_death(info, philo);
 				pthread_mutex_lock(&info->alive);
 				info->death = 1;
 				pthread_mutex_unlock(&info->alive);
@@ -92,6 +90,7 @@ static int	philo(t_info *info)
 	i = -1;
 	philos = info->philos;
 	info->start_time = philo_time();
+	printf("%s%s%s\n", WHITE, DASH, DEFAULT);
 	if (info->nb_philo == 1)
 		return (one_philo(info));
 	while (++i < info->nb_philo)

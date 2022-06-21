@@ -21,8 +21,6 @@ int	check_death(t_info *info)
 	if (info->death)
 		exit = TRUE;
 	pthread_mutex_unlock(&info->alive);
-	if (exit == TRUE)
-		printf("check_death = %d\n", exit);
 	return (exit);
 }
 
