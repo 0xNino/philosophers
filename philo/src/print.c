@@ -65,8 +65,17 @@ void	print_meal(t_info *info, t_philo *philo, int count)
 	pthread_mutex_lock(&info->write);
 	if (check_death(info))
 	{
-		printf("%s  🍝\t%li ms\t\tPhilo #%d\tis eating his #%d meal\n%s", WHITE,
-			philo_time() - info->start_time, philo->id + 1, count, DEFAULT);
+		if (info->nb_meals_req <= 0)
+			printf("%s  🍝\t%li ms\t\tPhilo #%d\tis eating his #%d meal\n%s", WHITE,
+				philo_time() - info->start_time, philo->id + 1, count, DEFAULT);
+		else if (count >= info->nb_meals_req)
+			printf("%s  🍝\t%li ms\t\tPhilo #%d\tis eating his #%d/%d meal\n%s",
+				GREEN, philo_time() - info->start_time, philo->id + 1, count,
+				info->nb_meals_req, DEFAULT);
+		else
+			printf("%s  🍝\t%li ms\t\tPhilo #%d\tis eating his #%d/%d meal\n%s",
+				YELLOW, philo_time() - info->start_time, philo->id + 1, count,
+				info->nb_meals_req, DEFAULT);
 		printf("%s%s\n%s", WHITE, DASH, DEFAULT);
 	}
 	pthread_mutex_unlock(&info->write);
