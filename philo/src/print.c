@@ -19,7 +19,7 @@ void	print_death(t_info *info, t_philo *philo)
 	{
 		printf("%s  💀\t%li ms\t\tPhilo #%d\thas died\n%s", RED,
 			philo_time() - info->start_time, philo->id + 1, DEFAULT);
-		printf("%s%s\n%s", WHITE, DASH, DEFAULT);
+		printf("%s%s\n%s", GRAY, DASH, DEFAULT);
 	}
 	pthread_mutex_unlock(&info->write);
 }
@@ -31,7 +31,7 @@ void	print_think(t_info *info, t_philo *philo)
 	{
 		printf("%s  💭\t%li ms\t\tPhilo #%d\tis thinking\n%s", WHITE,
 			philo_time() - info->start_time, philo->id + 1, DEFAULT);
-		printf("%s%s\n%s", WHITE, DASH, DEFAULT);
+		printf("%s%s\n%s", GRAY, DASH, DEFAULT);
 	}
 	pthread_mutex_unlock(&info->write);
 }
@@ -43,7 +43,7 @@ void	print_sleep(t_info *info, t_philo *philo)
 	{
 		printf("%s  💤\t%li ms\t\tPhilo #%d\tis sleeping\n%s", WHITE,
 			philo_time() - info->start_time, philo->id + 1, DEFAULT);
-		printf("%s%s\n%s", WHITE, DASH, DEFAULT);
+		printf("%s%s\n%s", GRAY, DASH, DEFAULT);
 	}
 	pthread_mutex_unlock(&info->write);
 }
@@ -55,7 +55,7 @@ void	print_fork(t_info *info, t_philo *philo, int count)
 	{
 		printf("%s  🥄\t%li ms\t\tPhilo #%d\thas taken the fork #%d\n%s", WHITE,
 			philo_time() - info->start_time, philo->id + 1, count, DEFAULT);
-		printf("%s%s\n%s", WHITE, DASH, DEFAULT);
+		printf("%s%s\n%s", GRAY, DASH, DEFAULT);
 	}
 	pthread_mutex_unlock(&info->write);
 }
@@ -76,7 +76,7 @@ void	print_meal(t_info *info, t_philo *philo, int count)
 			printf("%s  🍝\t%li ms\t\tPhilo #%d\tis eating his #%d/%d meal\n%s",
 				YELLOW, philo_time() - info->start_time, philo->id + 1, count,
 				info->nb_meals_req, DEFAULT);
-		printf("%s%s\n%s", WHITE, DASH, DEFAULT);
+		printf("%s%s\n%s", GRAY, DASH, DEFAULT);
 	}
 	pthread_mutex_unlock(&info->write);
 }
