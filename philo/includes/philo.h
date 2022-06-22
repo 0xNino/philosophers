@@ -26,7 +26,7 @@
 # define TRUE 0
 # define FALSE 1
 
-# define DEFAULT "\001\033[0;39m\002"
+# define RESET "\001\033[0;39m\002"
 # define GRAY "\001\033[1;90m\002"
 # define RED "\001\033[1;91m\002"
 # define GREEN "\001\033[1;92m\002"
@@ -58,12 +58,14 @@ typedef struct s_info
 	int				nb_meals_req;
 	int				death;
 	int				enough;
+	int				satiated_nb;
 	long			start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	alive;
 	pthread_mutex_t	write;
 	pthread_mutex_t	meals_eaten;
 	pthread_mutex_t	time_check;
+	pthread_mutex_t	satiated;
 	t_philo			*philos;
 }	t_info;
 
@@ -71,6 +73,7 @@ typedef struct s_info
 int		check_args(int argc, char **argv);
 int		check_death(t_info *info);
 int		check_enough(t_info *info);
+void	*check_satiated(t_info *info, t_philo *philo);
 
 // end.c
 int		end_threads(t_info *info);
@@ -86,6 +89,7 @@ void	philo_sleep(t_info *info, long time);
 void	philo_meal(t_info *info, t_philo *philo);
 long	philo_time(void);
 int		philo_error(char *errmsg, int errnum);
+void	*philo_unlock(pthread_mutex_t *mutex);
 
 // print.c
 void	print_death(t_info *info, t_philo *philo);

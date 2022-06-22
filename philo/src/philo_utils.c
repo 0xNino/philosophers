@@ -56,3 +56,9 @@ int	philo_error(char *errmsg, int errnum)
 	printf("%s", errmsg);
 	return (errnum);
 }
+
+void	*philo_unlock(pthread_mutex_t *mutex)
+{
+	pthread_mutex_unlock(mutex);
+	return (SUCCESS);
+}

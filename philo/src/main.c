@@ -26,12 +26,11 @@ static void	*routine(void *void_philo)
 	while (check_death(info))
 	{
 		philo_meal(info, philo);
+		if (check_satiated(info, philo) == SUCCESS)
+			return (SUCCESS);
 		pthread_mutex_lock(&info->meals_eaten);
 		if (info->enough)
-		{
-			pthread_mutex_unlock(&info->meals_eaten);
-			break ;
-		}
+			return (philo_unlock(&info->meals_eaten));
 		pthread_mutex_unlock(&info->meals_eaten);
 		print_sleep(info, philo);
 		philo_sleep(info, info->time_sleep);
@@ -90,13 +89,14 @@ static int	philo(t_info *info)
 	i = -1;
 	philos = info->philos;
 	info->start_time = philo_time();
-	printf("%s%s%s\n", WHITE, DASH, DEFAULT);
+	printf("%s%s%s\n", WHITE, DASH, RESET);
 	if (info->nb_philo == 1)
 		return (one_philo(info));
 	while (++i < info->nb_philo)
 	{
 		if (pthread_create(&philos[i].thread_id, NULL, routine, &philos[i]))
 			return (philo_error("Error: phtread_create failed\n", FAILURE));
+		philo_sleep(info, 200);
 		pthread_mutex_lock(&info->time_check);
 		philos[i].last_meal_time = philo_time();
 		pthread_mutex_unlock(&info->time_check);

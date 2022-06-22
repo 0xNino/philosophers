@@ -74,3 +74,16 @@ int	check_enough(t_info *info)
 	pthread_mutex_unlock(&info->meals_eaten);
 	return (SUCCESS);
 }
+
+void	*check_satiated(t_info *info, t_philo *philo)
+{
+	pthread_mutex_lock(&info->satiated);
+	if (philo->nb_meals == info->nb_meals_req)
+	{
+		info->satiated_nb++;
+		if (info->satiated_nb == info->nb_philo)
+			return (philo_unlock(&info->satiated));
+	}
+	pthread_mutex_unlock(&info->satiated);
+	return ((void *) FAILURE);
+}

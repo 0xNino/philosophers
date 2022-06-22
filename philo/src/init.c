@@ -53,6 +53,7 @@ int	init_info(char **argv, t_info *info)
 		return (philo_error("Error: philos malloc failed\n", FAILURE));
 	info->death = 0;
 	info->enough = 0;
+	info->satiated_nb = 1;
 	if (info->nb_philo < 1 || info->nb_philo > 250)
 		return (philo_error("Error: invalid philosopher count\n", FAILURE));
 	if (info->time_die < 0 || info->time_eat < 0 || info->time_sleep < 0)
@@ -97,6 +98,8 @@ int	init_mutex(t_info *info)
 	if (pthread_mutex_init(&info->meals_eaten, NULL))
 		return (philo_error("Error: mutex init failed\n", FAILURE));
 	if (pthread_mutex_init(&info->time_check, NULL))
+		return (philo_error("Error: mutex init failed\n", FAILURE));
+	if (pthread_mutex_init(&info->satiated, NULL))
 		return (philo_error("Error: mutex init failed\n", FAILURE));
 	return (SUCCESS);
 }
