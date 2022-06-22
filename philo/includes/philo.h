@@ -91,7 +91,7 @@ int		philo_error(char *errmsg, int errnum);
 void	print_death(t_info *info, t_philo *philo);
 void	print_think(t_info *info, t_philo *philo);
 void	print_sleep(t_info *info, t_philo *philo);
-void	print_fork(t_info *info, t_philo *philo, int count);
+void	print_fork(t_info *info, t_philo *philo, int fork);
 void	print_meal(t_info *info, t_philo *philo, int count);
 
 #endif

@@ -48,13 +48,13 @@ void	print_sleep(t_info *info, t_philo *philo)
 	pthread_mutex_unlock(&info->write);
 }
 
-void	print_fork(t_info *info, t_philo *philo, int count)
+void	print_fork(t_info *info, t_philo *philo, int fork)
 {
 	pthread_mutex_lock(&info->write);
 	if (check_death(info))
 	{
 		printf("%s  🥄\t%li ms\t\tPhilo #%d\thas taken the fork #%d\n%s", WHITE,
-			philo_time() - info->start_time, philo->id + 1, count, DEFAULT);
+			philo_time() - info->start_time, philo->id + 1, fork + 1, DEFAULT);
 		printf("%s%s\n%s", GRAY, DASH, DEFAULT);
 	}
 	pthread_mutex_unlock(&info->write);
