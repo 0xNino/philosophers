@@ -35,8 +35,10 @@
 # define MAGENTA "\001\033[1;95m\002"
 # define CYAN "\001\033[1;96m\002"
 # define WHITE "\001\033[0;97m\002"
+# define BLUEBG "\033[48;5;21m"
 
 # define DASH "----------------------------------------------------------------"
+# define DASH2 "-------"
 
 typedef struct s_philo
 {
@@ -45,6 +47,7 @@ typedef struct s_philo
 	int				left_fork_id;
 	int				right_fork_id;
 	long			last_meal_time;
+	long			starvation_time;
 	struct s_info	*info;
 	pthread_t		thread_id;
 }	t_philo;
@@ -60,13 +63,14 @@ typedef struct s_info
 	int				enough;
 	int				satiated_nb;
 	long			start_time;
-	pthread_t		satiated_monitor;
+	pthread_t		satiated_id;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	alive;
 	pthread_mutex_t	write;
 	pthread_mutex_t	meals_eaten;
 	pthread_mutex_t	time_check;
 	pthread_mutex_t	satiated;
+	pthread_mutex_t	starvation;
 	t_philo			*philos;
 }	t_info;
 
@@ -77,6 +81,7 @@ int		check_enough(t_info *info);
 void	*check_satiated(t_info *info, t_philo *philo);
 
 // end.c
+int		end_monitor(t_info *info, t_philo *philo);
 int		end_threads(t_info *info);
 int		end_mutexes(t_info *info);
 

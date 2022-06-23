@@ -21,7 +21,7 @@ void	philo_sleep(t_info *info, long time)
 	{
 		if (philo_time() - i >= time)
 			break ;
-		usleep(10);
+		usleep(5);
 	}
 }
 

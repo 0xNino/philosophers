@@ -54,7 +54,7 @@ int	init_info(char **argv, t_info *info)
 	info->death = 0;
 	info->enough = 0;
 	info->satiated_nb = 1;
-	if (info->nb_philo < 1 || info->nb_philo > 250)
+	if (info->nb_philo < 1 || info->nb_philo > 200)
 		return (philo_error("Error: invalid philosopher count\n", FAILURE));
 	if (info->time_die < 0 || info->time_eat < 0 || info->time_sleep < 0)
 		return (philo_error("Error: invalid time values\n", FAILURE));
@@ -75,6 +75,7 @@ int	init_philo(t_info *info)
 		info->philos[i].left_fork_id = i;
 		info->philos[i].right_fork_id = (i + 1) % info->nb_philo;
 		info->philos[i].last_meal_time = 0;
+		info->philos[i].starvation_time = 0;
 		info->philos[i].info = info;
 	}
 	return (SUCCESS);
@@ -100,6 +101,8 @@ int	init_mutex(t_info *info)
 	if (pthread_mutex_init(&info->time_check, NULL))
 		return (philo_error("Error: mutex init failed\n", FAILURE));
 	if (pthread_mutex_init(&info->satiated, NULL))
+		return (philo_error("Error: mutex init failed\n", FAILURE));
+	if (pthread_mutex_init(&info->starvation, NULL))
 		return (philo_error("Error: mutex init failed\n", FAILURE));
 	return (SUCCESS);
 }

@@ -12,7 +12,7 @@
 
 #include "../includes/philo.h"
 
-static void	*satiated_routine(void *void_philo)
+static void	*satiated_rout(void *void_philo)
 {
 	t_philo	*philo;
 	t_info	*info;
@@ -20,7 +20,7 @@ static void	*satiated_routine(void *void_philo)
 
 	philo = (t_philo *) void_philo;
 	info = philo->info;
-	while (1)
+	while (check_death(info))
 	{
 		philo_sleep(info, 10);
 		i = 0;
@@ -48,7 +48,7 @@ static void	*routine(void *void_philo)
 	if (info->nb_philo == 1)
 		return (SUCCESS);
 	if (philo->id % 2)
-		philo_sleep(info, 50);
+		philo_sleep(info, 500);
 	while (check_death(info))
 	{
 		philo_meal(info, philo);
@@ -72,38 +72,13 @@ static int	alone(t_info *info)
 	philo = info->philos[0];
 	if (pthread_create(&philo.thread_id, NULL, routine, &philo))
 		return (philo_error("Error: phtread_create failed\n", FAILURE));
+	philo.starvation_time = info->time_die;
 	print_fork(info, &philo, philo.left_fork_id);
 	philo_sleep(info, info->time_die);
 	print_death(info, &philo);
-	end_threads(info);
+	pthread_join(philo.thread_id, NULL);
+	free(info->philos);
 	end_mutexes(info);
-	return (SUCCESS);
-}
-
-static int	death_monitor(t_info *info, t_philo *philo)
-{
-	int	i;
-
-	while (!info->enough)
-	{
-		i = -1;
-		while (++i < info->nb_philo && check_death(info))
-		{
-			pthread_mutex_lock(&info->time_check);
-			if ((philo_time() - philo->last_meal_time) > info->time_die)
-			{
-				print_death(info, philo);
-				pthread_mutex_lock(&info->alive);
-				info->death = 1;
-				pthread_mutex_unlock(&info->alive);
-			}
-			pthread_mutex_unlock(&info->time_check);
-			philo_sleep(info, 10);
-		}
-		if (info->death)
-			break ;
-		check_enough(info);
-	}
 	return (SUCCESS);
 }
 
@@ -115,27 +90,24 @@ static int	philo(t_info *info)
 	i = -1;
 	philos = info->philos;
 	info->start_time = philo_time();
-	printf("%s%s%s\n", WHITE, DASH, RESET);
+	printf("%s%s%s%s\n", WHITE, DASH, DASH2, RESET);
 	if (info->nb_philo == 1)
 		return (alone(info));
 	while (++i < info->nb_philo)
 	{
 		if (pthread_create(&philos[i].thread_id, NULL, routine, &philos[i]))
 			return (philo_error("Error: phtread_create failed\n", FAILURE));
-		if (pthread_create(&info->satiated_monitor, NULL, satiated_routine, &philos[i]))
+		if (pthread_create(&info->satiated_id, NULL, satiated_rout, &philos[i]))
 			return (philo_error("Error: phtread_create failed\n", FAILURE));
-//		if (info->nb_philo <= 20)
-//			philo_sleep(info, ft_min(info->nb_philo * 10, 200));
-//		else
-//			philo_sleep(info, ft_min(info->nb_philo * 2, 200));
-		philo_sleep(info, 150);
 		pthread_mutex_lock(&info->time_check);
 		philos[i].last_meal_time = philo_time();
 		pthread_mutex_unlock(&info->time_check);
 	}
-	death_monitor(info, info->philos);
+	end_monitor(info, info->philos);
 	end_threads(info);
 	end_mutexes(info);
+	if (info->satiated_nb >= info->nb_philo)
+		printf("%s\t\t\tEveryone finished eating 🎉\t\t\t%s\n", BLUEBG, RESET);
 	return (SUCCESS);
 }
 
