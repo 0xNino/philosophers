@@ -34,13 +34,15 @@ void	philo_meal(t_info *info, t_philo *philo)
 	pthread_mutex_lock(&info->time_check);
 	philo->last_meal_time = philo_time();
 	pthread_mutex_unlock(&info->time_check);
+	pthread_mutex_lock(&info->meals_eaten);
 	print_meal(info, philo, philo->nb_meals + 1);
+	pthread_mutex_unlock(&info->meals_eaten);
 	philo_sleep(info, info->time_eat);
-	pthread_mutex_unlock(&info->forks[philo->left_fork_id]);
-	pthread_mutex_unlock(&info->forks[philo->right_fork_id]);
 	pthread_mutex_lock(&info->meals_eaten);
 	philo->nb_meals++;
 	pthread_mutex_unlock(&info->meals_eaten);
+	pthread_mutex_unlock(&info->forks[philo->left_fork_id]);
+	pthread_mutex_unlock(&info->forks[philo->right_fork_id]);
 }
 
 long	philo_time(void)

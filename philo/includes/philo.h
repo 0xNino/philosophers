@@ -6,7 +6,7 @@
 /*   By: 0xNino <marvin@42lausanne.ch>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/31 16:22:17 by 0xNino            #+#    #+#             */
-/*   Updated: 2022/06/21 16:38:13 by 0xNino           ###   ########.fr       */
+/*   Updated: 2022/06/23 02:21:18 by 0xNino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
 # define CYAN "\001\033[1;96m\002"
 # define WHITE "\001\033[0;97m\002"
 
-# define DASH "---------------------------------------------------------------"
+# define DASH "----------------------------------------------------------------"
 
 typedef struct s_philo
 {
@@ -60,6 +60,7 @@ typedef struct s_info
 	int				enough;
 	int				satiated_nb;
 	long			start_time;
+	pthread_t		satiated_monitor;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	alive;
 	pthread_mutex_t	write;
@@ -97,5 +98,9 @@ void	print_think(t_info *info, t_philo *philo);
 void	print_sleep(t_info *info, t_philo *philo);
 void	print_fork(t_info *info, t_philo *philo, int fork);
 void	print_meal(t_info *info, t_philo *philo, int count);
+
+// utils.c
+int		ft_min(int a, int b);
+int		ft_max(int a, int b);
 
 #endif

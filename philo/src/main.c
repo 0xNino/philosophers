@@ -6,11 +6,37 @@
 /*   By: 0xNino <marvin@42lausanne.ch>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 21:14:31 by 0xNino            #+#    #+#             */
-/*   Updated: 2022/06/21 16:37:33 by 0xNino           ###   ########.fr       */
+/*   Updated: 2022/06/23 02:49:24 by 0xNino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
+
+static void	*satiated_routine(void *void_philo)
+{
+	t_philo	*philo;
+	t_info	*info;
+	int		i;
+
+	philo = (t_philo *) void_philo;
+	info = philo->info;
+	while (1)
+	{
+		philo_sleep(info, 10);
+		i = 0;
+		pthread_mutex_lock(&info->satiated);
+		if (info->satiated_nb == info->nb_philo)
+		{
+			pthread_mutex_lock(&info->alive);
+			info->death = 1;
+			pthread_mutex_unlock(&info->alive);
+			break ;
+		}
+		return (philo_unlock(&info->satiated));
+	}
+	pthread_mutex_unlock(&info->satiated);
+	return ((void *) FAILURE);
+}
 
 static void	*routine(void *void_philo)
 {
@@ -39,7 +65,7 @@ static void	*routine(void *void_philo)
 	return (SUCCESS);
 }
 
-static int	one_philo(t_info *info)
+static int	alone(t_info *info)
 {
 	t_philo	philo;
 
@@ -91,12 +117,18 @@ static int	philo(t_info *info)
 	info->start_time = philo_time();
 	printf("%s%s%s\n", WHITE, DASH, RESET);
 	if (info->nb_philo == 1)
-		return (one_philo(info));
+		return (alone(info));
 	while (++i < info->nb_philo)
 	{
 		if (pthread_create(&philos[i].thread_id, NULL, routine, &philos[i]))
 			return (philo_error("Error: phtread_create failed\n", FAILURE));
-		philo_sleep(info, 200);
+		if (pthread_create(&info->satiated_monitor, NULL, satiated_routine, &philos[i]))
+			return (philo_error("Error: phtread_create failed\n", FAILURE));
+//		if (info->nb_philo <= 20)
+//			philo_sleep(info, ft_min(info->nb_philo * 10, 200));
+//		else
+//			philo_sleep(info, ft_min(info->nb_philo * 2, 200));
+		philo_sleep(info, 150);
 		pthread_mutex_lock(&info->time_check);
 		philos[i].last_meal_time = philo_time();
 		pthread_mutex_unlock(&info->time_check);

@@ -16,7 +16,7 @@ CFLAGS	= -g -pthread -Wall -Wextra -Werror
 #								SOURCE FILES								   #
 # **************************************************************************** #
 
-SRCS_FILES	=	check.c end.c init.c main.c philo_utils.c print.c
+SRCS_FILES	=	check.c end.c init.c main.c philo_utils.c print.c utils.c
 SRCS		=	$(addprefix $(SRCS_DIR)/, $(SRCS_FILES))
 OBJS		=	$(SRCS:.c=.o)
 
