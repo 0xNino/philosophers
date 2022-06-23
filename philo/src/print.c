@@ -99,12 +99,11 @@ void	print_meal(t_info *info, t_philo *philo, int count)
 		if (time <= 210)
 			philo->starvation_time = info->time_die;
 		if (info->nb_meals_req <= 0)
-			printf("%s  🍝\t%li ms\t   Philo #%d\tis eating\t%d 🍝\t%li ⏱️\n%s", WHITE,
-				time, philo->id + 1, count, philo->starvation_time - time, RESET);
+			printf(EAT1, WHITE, time, philo->id + 1, count,
+				philo->starvation_time - time, RESET);
 		else if (count == info->nb_meals_req || info->satiated_nb >= info->nb_philo)
-			printf("%s  🍝\t%li ms\t   Philo #%d\tis eating  %d/%d 🍝 | %d/%d 😋\t%li ⏱️\n%s",
-				GREEN, time, philo->id + 1, count,
-				info->nb_meals_req, info->satiated_nb, info->nb_philo, philo->starvation_time - time, RESET);
+			printf(EAT2, GREEN, time, philo->id + 1, count, info->nb_meals_req,
+				info->satiated_nb, info->nb_philo, philo->starvation_time - time, RESET);
 		else
 			printf("%s  🍝\t%li ms\t   Philo #%d\tis eating\t%d/%d | %d/%d\t%li ⏱️\n%s",
 				WHITE, time, philo->id + 1, count,

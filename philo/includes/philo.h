@@ -37,6 +37,8 @@
 # define WHITE "\001\033[0;97m\002"
 # define BLUEBG "\033[48;5;21m"
 
+# define EAT1 "%s  🍝\t%li ms\t   Philo #%d\tis eating\t%d 🍝\t%li ⏱️\n%s"
+# define EAT2 "%s  🍝\t%li ms\t   Philo #%d\tis eating  %d/%d 🍝 | %d/%d 😋\t%li ⏱️\n%s"
 # define DASH "----------------------------------------------------------------"
 # define DASH2 "-------"
 
