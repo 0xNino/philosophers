@@ -12,21 +12,6 @@
 
 #include "../includes/philo.h"
 
-static int	isnumber(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		if ('0' <= str[i] && str[i] <= '9')
-			i++;
-		else
-			return (FAILURE);
-	}
-	return (SUCCESS);
-}
-
 int	check_args(int argc, char **argv)
 {
 	int	i;
@@ -77,13 +62,16 @@ int	check_enough(t_info *info)
 
 void	*check_satiated(t_info *info, t_philo *philo)
 {
+	int	nb_philo;
+
+	nb_philo = info->nb_philo;
 	pthread_mutex_lock(&info->meals_eaten);
 	pthread_mutex_lock(&info->satiated);
-	if (philo->nb_meals == info->nb_meals_req)
+	if (philo->nb_meals == info->nb_meals_req && info->satiated_nb < nb_philo)
 	{
 		pthread_mutex_unlock(&info->meals_eaten);
 		info->satiated_nb++;
-		if (info->satiated_nb == info->nb_philo)
+		if (info->satiated_nb >= info->nb_philo)
 			return (philo_unlock(&info->satiated));
 	}
 	pthread_mutex_unlock(&info->satiated);

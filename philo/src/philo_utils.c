@@ -41,6 +41,9 @@ void	philo_meal(t_info *info, t_philo *philo)
 	pthread_mutex_lock(&info->meals_eaten);
 	philo->nb_meals++;
 	pthread_mutex_unlock(&info->meals_eaten);
+	pthread_mutex_lock(&info->service);
+	info->served++;
+	pthread_mutex_unlock(&info->service);
 	pthread_mutex_unlock(&info->forks[philo->left_fork_id]);
 	pthread_mutex_unlock(&info->forks[philo->right_fork_id]);
 }

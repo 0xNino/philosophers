@@ -30,7 +30,7 @@ int	end_monitor(t_info *info, t_philo *philo)
 				pthread_mutex_unlock(&info->alive);
 			}
 			pthread_mutex_unlock(&info->time_check);
-			philo_sleep(info, 5);
+			philo_sleep(info, 1);
 		}
 		if (info->death)
 			break ;
@@ -45,8 +45,9 @@ int	end_threads(t_info *info)
 
 	i = -1;
 	while (++i < info->nb_philo)
-		pthread_join(info->philos[i].thread_id, NULL);
+		pthread_join(info->philos[i].thread, NULL);
 	pthread_join(info->satiated_id, NULL);
+	pthread_join(info->service_id, NULL);
 	free(info->philos);
 	return (SUCCESS);
 }
@@ -64,6 +65,17 @@ int	end_mutexes(t_info *info)
 	pthread_mutex_destroy(&info->write);
 	pthread_mutex_destroy(&info->satiated);
 	pthread_mutex_destroy(&info->starvation);
+	pthread_mutex_destroy(&info->service);
 	free(info->forks);
+	return (SUCCESS);
+}
+
+int	end_program(t_info *info)
+{
+	end_monitor(info, info->philos);
+	end_threads(info);
+	end_mutexes(info);
+	if (info->satiated_nb >= info->nb_philo && info->death != 1)
+		printf(END, BG, info->satiated_nb, info->nb_philo, RESET);
 	return (SUCCESS);
 }

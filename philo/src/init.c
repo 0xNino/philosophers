@@ -12,32 +12,6 @@
 
 #include "../includes/philo.h"
 
-static int	ft_atoi(const char *str)
-{
-	long	nbr;
-	int		minus;
-
-	nbr = 0;
-	minus = 0;
-	while ((9 <= *str && *str <= 13) || *str == 32)
-		str++;
-	if (*str == '+' || *str == '-')
-		if (*str++ == '-')
-			minus = 1;
-	while ('0' <= *str && *str <= '9')
-	{
-		if ((nbr > (__LONG_MAX__ - *str + '0') / 10) && minus)
-			return (0);
-		if ((nbr > (__LONG_MAX__ - *str + '0') / 10) && !minus)
-			return (-1);
-		nbr = 10 * nbr + (*str - '0');
-		str++;
-	}
-	if (minus)
-		return ((int)-nbr);
-	return ((int)nbr);
-}
-
 int	init_info(char **argv, t_info *info)
 {
 	info->nb_philo = ft_atoi(argv[1]);
@@ -54,6 +28,8 @@ int	init_info(char **argv, t_info *info)
 	info->death = 0;
 	info->enough = 0;
 	info->satiated_nb = 1;
+	info->served = 0;
+	info->current = 0;
 	if (info->nb_philo < 1 || info->nb_philo > 200)
 		return (philo_error("Error: invalid philosopher count\n", FAILURE));
 	if (info->time_die < 0 || info->time_eat < 0 || info->time_sleep < 0)
@@ -103,6 +79,8 @@ int	init_mutex(t_info *info)
 	if (pthread_mutex_init(&info->satiated, NULL))
 		return (philo_error("Error: mutex init failed\n", FAILURE));
 	if (pthread_mutex_init(&info->starvation, NULL))
+		return (philo_error("Error: mutex init failed\n", FAILURE));
+	if (pthread_mutex_init(&info->service, NULL))
 		return (philo_error("Error: mutex init failed\n", FAILURE));
 	return (SUCCESS);
 }
