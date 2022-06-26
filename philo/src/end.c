@@ -49,6 +49,7 @@ int	end_threads(t_info *info)
 	while (++i < info->nb_philo)
 		pthread_join(info->philos[i].thread, NULL);
 	pthread_join(info->satiated_id, NULL);
+	pthread_join(info->service_id, NULL);
 	free(info->philos);
 	return (SUCCESS);
 }
@@ -64,6 +65,7 @@ int	end_mutexes(t_info *info)
 	pthread_mutex_destroy(&info->time_check);
 	pthread_mutex_destroy(&info->satiated);
 	pthread_mutex_destroy(&info->starvation);
+	pthread_mutex_destroy(&info->service);
 	pthread_mutex_destroy(&info->write);
 	pthread_mutex_destroy(&info->exit);
 	free(info->forks);
