@@ -74,7 +74,7 @@ void	*routine_philo(void *void_philo)
 		if (check_satiated(info, philo) == SUCCESS)
 			return (SUCCESS);
 		if (info->enough)
-			return (philo_unlock(&info->meals_eaten));
+			return (SUCCESS);
 		print_sleep(info, philo);
 		philo_sleep(info, info->time_sleep);
 		print_think(info, philo);

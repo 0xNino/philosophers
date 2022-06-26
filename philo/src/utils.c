@@ -84,9 +84,9 @@ void	print_meals(t_info *info, t_philo *philo, int count, long time)
 		printf(EAT1, WHITE, time, id, wait, count, RESET);
 	else if (meals_req <= 0)
 		printf(EAT2, WHITE, time, id, wait, count, RESET);
-	else if (sat_nb >= info->nb_philo && count == meals_req && time < 10000)
+	else if (sat_nb >= info->nb_philo && time < 10000)
 		printf(EAT3, GREEN2, time, id, wait, count, RESET);
-	else if (sat_nb >= info->nb_philo && count == meals_req)
+	else if (sat_nb >= info->nb_philo)
 		printf(EAT4, GREEN2, time, id, wait, count, RESET);
 	else if ((count == meals_req || sat_nb >= info->nb_philo) && time < 10000)
 		printf(EAT3, GREEN, time, id, wait, count, RESET);
