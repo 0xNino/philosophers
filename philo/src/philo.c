@@ -20,6 +20,7 @@ static int	philo_alone(t_info *info)
 	if (pthread_create(&philo.thread, NULL, routine_philo, &philo))
 		return (philo_error("Error: phtread_create failed\n", FAILURE));
 	info->start_time = philo_time();
+	philo.last_meal_time = info->start_time;
 	philo.starvation_time = info->time_die;
 	print_fork(info, &philo, philo.left_fork_id);
 	philo_sleep(info, info->time_die);
