@@ -25,7 +25,7 @@ int	init_info(char **argv, t_info *info)
 	info->philos = malloc (sizeof(t_philo) * info->nb_philo);
 	if (!info->philos)
 		return (philo_error("Error: philos malloc failed\n", FAILURE));
-	info->death = 0;
+	info->end = 0;
 	info->enough = 0;
 	info->satiated_nb = 1;
 	info->served = 0;
@@ -50,8 +50,7 @@ int	init_philo(t_info *info)
 		info->philos[i].nb_meals = 0;
 		info->philos[i].left_fork_id = i;
 		info->philos[i].right_fork_id = (i + 1) % info->nb_philo;
-		info->philos[i].last_meal_time = 0;
-		info->philos[i].starvation_time = 0;
+		info->philos[i].starvation_time = info->time_die;
 		info->philos[i].info = info;
 	}
 	return (SUCCESS);
@@ -70,7 +69,7 @@ int	init_mutex(t_info *info)
 			return (philo_error("Error: mutex init failed\n", FAILURE));
 	if (pthread_mutex_init(&info->write, NULL))
 		return (philo_error("Error: mutex init failed\n", FAILURE));
-	if (pthread_mutex_init(&info->alive, NULL))
+	if (pthread_mutex_init(&info->exit, NULL))
 		return (philo_error("Error: mutex init failed\n", FAILURE));
 	if (pthread_mutex_init(&info->meals_eaten, NULL))
 		return (philo_error("Error: mutex init failed\n", FAILURE));

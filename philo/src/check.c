@@ -28,15 +28,15 @@ int	check_args(int argc, char **argv)
 	return (SUCCESS);
 }
 
-int	check_death(t_info *info)
+int	check_end(t_info *info)
 {
 	int	exit;
 
 	exit = FALSE;
-	pthread_mutex_lock(&info->alive);
-	if (info->death)
+	pthread_mutex_lock(&info->exit);
+	if (info->end)
 		exit = TRUE;
-	pthread_mutex_unlock(&info->alive);
+	pthread_mutex_unlock(&info->exit);
 	return (exit);
 }
 
@@ -51,8 +51,10 @@ int	check_enough(t_info *info)
 	meals_req = info->nb_meals_req;
 	nb_philo = info->nb_philo;
 	philos = info->philos;
+	if (meals_req <= 0)
+		return (SUCCESS);
 	pthread_mutex_lock(&info->meals_eaten);
-	while (meals_req > 0 && i < nb_philo && philos[i].nb_meals >= meals_req - 1)
+	while (i < nb_philo && philos[i].nb_meals >= max(meals_req - 1, 1))
 		i++;
 	if (i == info->nb_philo)
 		info->enough = 1;

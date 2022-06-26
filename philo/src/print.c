@@ -16,16 +16,20 @@ void	print_death(t_info *info, t_philo *philo)
 {
 	long	time;
 	int		nb_philo;
+	long	ms;
 
 	nb_philo = info->nb_philo;
 	pthread_mutex_lock(&info->write);
 	pthread_mutex_lock(&info->satiated);
-	if (check_death(info) && (info->satiated_nb < nb_philo || nb_philo == 1))
+	if (check_end(info) && (info->satiated_nb < nb_philo || nb_philo == 1))
 	{
 		time = philo_time() - info->start_time;
 		pthread_mutex_lock(&info->starvation);
-		printf("%s  💀\t%li ms\t   Philo #%d\thas died\t\t\t%li ⏱️\n%s", RED,
-			time, philo->id + 1, time - philo->starvation_time, RESET);
+		ms = philo_time() - philo->last_meal_time;
+		if (time < 10000)
+			printf(DEAD1, RED, time, philo->id + 1, ms, philo->nb_meals, RESET);
+		else
+			printf(DEAD2, RED, time, philo->id + 1, ms, philo->nb_meals, RESET);
 		pthread_mutex_unlock(&info->starvation);
 		printf("%s%s\n%s", GRAY, DASH, RESET);
 	}
@@ -36,14 +40,18 @@ void	print_death(t_info *info, t_philo *philo)
 void	print_think(t_info *info, t_philo *philo)
 {
 	long	time;
+	int		nb_meal;
 
+	nb_meal = philo->nb_meals + 1;
 	pthread_mutex_lock(&info->write);
 	pthread_mutex_lock(&info->satiated);
-	if (check_death(info) && (info->satiated_nb < info->nb_philo))
+	if (check_end(info) && (info->satiated_nb <= info->nb_philo))
 	{
 		time = philo_time() - info->start_time;
-		printf("%s  💭\t%li ms\t   Philo #%d\tis thinking\n%s", WHITE,
-			time, philo->id + 1, RESET);
+		if (time < 10000)
+			printf(THINK1, WHITE, time, philo->id + 1, nb_meal, RESET);
+		else
+			printf(THINK2, WHITE, time, philo->id + 1, nb_meal, RESET);
 		printf("%s%s\n%s", GRAY, DASH, RESET);
 	}
 	pthread_mutex_unlock(&info->satiated);
@@ -53,14 +61,18 @@ void	print_think(t_info *info, t_philo *philo)
 void	print_sleep(t_info *info, t_philo *philo)
 {
 	long	time;
+	int		nb_meal;
 
+	nb_meal = philo->nb_meals + 1;
 	pthread_mutex_lock(&info->write);
 	pthread_mutex_lock(&info->satiated);
-	if (check_death(info) && (info->satiated_nb < info->nb_philo))
+	if (check_end(info) && (info->satiated_nb <= info->nb_philo))
 	{
 		time = philo_time() - info->start_time;
-		printf("%s  💤\t%li ms\t   Philo #%d\tis sleeping\n%s", WHITE,
-			time, philo->id + 1, RESET);
+		if (time < 10000)
+			printf(SLEEP1, WHITE, time, philo->id + 1, nb_meal, RESET);
+		else
+			printf(SLEEP2, WHITE, time, philo->id + 1, nb_meal, RESET);
 		printf("%s%s\n%s", GRAY, DASH, RESET);
 	}
 	pthread_mutex_unlock(&info->satiated);
@@ -71,15 +83,19 @@ void	print_fork(t_info *info, t_philo *philo, int fork)
 {
 	long	time;
 	int		nb_philo;
+	int		nb_meal;
 
-	pthread_mutex_lock(&info->write);
 	nb_philo = info->nb_philo;
+	nb_meal = philo->nb_meals + 1;
+	pthread_mutex_lock(&info->write);
 	pthread_mutex_lock(&info->satiated);
-	if (check_death(info) && (info->satiated_nb <= nb_philo || nb_philo == 1))
+	if (check_end(info) && (info->satiated_nb <= nb_philo || nb_philo == 1))
 	{
 		time = philo_time() - info->start_time;
-		printf("%s  🥄\t%li ms\t   Philo #%d\thas taken the fork #%d\n%s",
-			WHITE, time, philo->id + 1, fork + 1, RESET);
+		if (time < 10000)
+			printf(FORK1, WHITE, time, philo->id + 1, fork + 1, nb_meal, RESET);
+		else
+			printf(FORK2, WHITE, time, philo->id + 1, fork + 1, nb_meal, RESET);
 		printf("%s%s\n%s", GRAY, DASH, RESET);
 	}
 	pthread_mutex_unlock(&info->satiated);
@@ -89,14 +105,12 @@ void	print_fork(t_info *info, t_philo *philo, int fork)
 void	print_meal(t_info *info, t_philo *philo, int count)
 {
 	long	time;
-	int		sat_nb;
 
 	pthread_mutex_lock(&info->write);
 	pthread_mutex_lock(&info->starvation);
-	if (check_death(info))
+	if (check_end(info) && (info->satiated_nb <= info->nb_philo))
 	{
 		time = philo_time() - info->start_time;
-		sat_nb = info->satiated_nb;
 		if (time <= 401)
 			philo->starvation_time = info->time_die;
 		print_meals(info, philo, count, time);

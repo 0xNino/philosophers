@@ -53,19 +53,47 @@ int	ft_atoi(const char *str)
 	return ((int)nbr);
 }
 
+int	min(int a, int b)
+{
+	if (a > b)
+		return (b);
+	else
+		return (a);
+}
+
+int	max(int a, int b)
+{
+	if (a > b)
+		return (a);
+	else
+		return (b);
+}
+
 void	print_meals(t_info *info, t_philo *philo, int count, long time)
 {
-	int	sat_nb;
-	int	meals_req;
+	int		sat_nb;
+	int		meals_req;
+	int		id;
+	long	wait;
 
 	sat_nb = info->satiated_nb;
 	meals_req = info->nb_meals_req;
-	if (info->nb_meals_req <= 0)
-		printf(EAT1, WHITE, time, philo->id + 1, count, RESET);
-	else if (sat_nb >= info->nb_philo)
-		printf(EAT2, GREEN2, time, philo->id + 1, count, meals_req, RESET);
-	else if (count == info->nb_meals_req || sat_nb >= info->nb_philo)
-		printf(EAT2, GREEN, time, philo->id + 1, count, meals_req, RESET);
+	id = philo->id + 1;
+	wait = philo_time() - philo->last_meal_time;
+	if (meals_req <= 0 && time < 10000)
+		printf(EAT1, WHITE, time, id, wait, count, RESET);
+	else if (meals_req <= 0)
+		printf(EAT2, WHITE, time, id, wait, count, RESET);
+	else if (sat_nb >= info->nb_philo && count == meals_req && time < 10000)
+		printf(EAT3, GREEN2, time, id, wait, count, RESET);
+	else if (sat_nb >= info->nb_philo && count == meals_req)
+		printf(EAT4, GREEN2, time, id, wait, count, RESET);
+	else if ((count == meals_req || sat_nb >= info->nb_philo) && time < 10000)
+		printf(EAT3, GREEN, time, id, wait, count, RESET);
+	else if (count == meals_req || sat_nb >= info->nb_philo)
+		printf(EAT4, GREEN, time, id, wait, count, RESET);
+	else if (time < 10000)
+		printf(EAT5, WHITE, time, id, wait, count, RESET);
 	else
-		printf(EAT3, WHITE, time, philo->id + 1, count, meals_req, RESET);
+		printf(EAT6, WHITE, time, id, wait, count, RESET);
 }

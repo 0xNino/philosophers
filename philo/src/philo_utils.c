@@ -17,7 +17,7 @@ void	philo_sleep(t_info *info, long time)
 	long	i;
 
 	i = philo_time();
-	while (check_death(info))
+	while (check_end(info))
 	{
 		if (philo_time() - i >= time)
 			break ;
@@ -31,12 +31,12 @@ void	philo_meal(t_info *info, t_philo *philo)
 	print_fork(info, philo, philo->left_fork_id);
 	pthread_mutex_lock(&info->forks[philo->right_fork_id]);
 	print_fork(info, philo, philo->right_fork_id);
-	pthread_mutex_lock(&info->time_check);
-	philo->last_meal_time = philo_time();
-	pthread_mutex_unlock(&info->time_check);
 	pthread_mutex_lock(&info->meals_eaten);
 	print_meal(info, philo, philo->nb_meals + 1);
 	pthread_mutex_unlock(&info->meals_eaten);
+	pthread_mutex_lock(&info->time_check);
+	philo->last_meal_time = philo_time();
+	pthread_mutex_unlock(&info->time_check);
 	philo_sleep(info, info->time_eat);
 	pthread_mutex_lock(&info->meals_eaten);
 	philo->nb_meals++;

@@ -38,12 +38,23 @@
 # define BG "\033[48;5;21m"
 # define GREEN2 "\033[38;5;57m"
 
-# define EAT1 "%s  🍝\t%li ms\t   Philo #%d\tis eating\t%d 🍝\n%s"
-# define EAT2 "%s  🍝\t%li ms\t   Philo #%d\tis eating  %d/%d 🍝\n%s"
-# define EAT3 "%s  🍝\t%li ms\t   Philo #%d\tis eating\t%d/%d\n%s"
-# define DASH "---------------------------------------------------------------"
-# define DASH2 "-------"
-# define END "%s\t\t\t%d / %d finished eating 🎉\t\t\t%s\n"
+# define DEAD1	"%s  💀\t%li ms\t    Philo #%d\thas died\t%li ⏱️\t%d 🍝\n%s"
+# define DEAD2	"%s  💀\t%li ms    Philo #%d\thas died\t%li ⏱️\t%d 🍝\n%s"
+# define THINK1	"%s  💭\t%li ms\t    Philo #%d\tis thinking\t\t%d 🍝\n%s"
+# define THINK2	"%s  💭\t%li ms    Philo #%d\tis thinking\t\t%d 🍝\n%s"
+# define SLEEP1	"%s  💤\t%li ms\t    Philo #%d\tis sleeping\t\t%d 🍝\n%s"
+# define SLEEP2	"%s  💤\t%li ms    Philo #%d\tis sleeping\t\t%d 🍝\n%s"
+# define FORK1	"%s  🥄\t%li ms\t    Philo #%d\thas taken the fork #%d\t%d 🍝\n%s"
+# define FORK2	"%s  🥄\t%li ms    Philo #%d\thas taken the fork #%d\t%d 🍝\n%s"
+# define EAT1	"%s  🍝\t%li ms\t    Philo #%d\tis eating\t%li ⏱️\t%d 🍝\n%s"
+# define EAT2	"%s  🍝\t%li ms    Philo #%d\tis eating\t%li ⏱️\t%d 🍝\n%s"
+# define EAT3	"%s  🍝\t%li ms\t    Philo #%d\tis eating\t%li ⏱️\t%d 🍝\n%s"
+# define EAT4	"%s  🍝\t%li ms    Philo #%d\tis eating\t%li ⏱️\t%d 🍝\n%s"
+# define EAT5	"%s  🍝\t%li ms\t    Philo #%d\tis eating\t%li ⏱️\t%d 🍝\n%s"
+# define EAT6	"%s  🍝\t%li ms    Philo #%d\tis eating\t%li ⏱️\t%d 🍝\n%s"
+# define END1	"%s  🎉\t%d philosophers finished eating %d+ meal !\t\t\t%s\n"
+# define END2	"%s  🎉\t%d philosophers finished eating %d+ meals !\t\t%s\n"
+# define DASH "----------------------------------------------------------------"
 
 typedef struct s_philo
 {
@@ -64,7 +75,7 @@ typedef struct s_info
 	int				time_eat;
 	int				time_sleep;
 	int				nb_meals_req;
-	int				death;
+	int				end;
 	int				enough;
 	int				satiated_nb;
 	int				served;
@@ -73,7 +84,7 @@ typedef struct s_info
 	pthread_t		satiated_id;
 	pthread_t		service_id;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	alive;
+	pthread_mutex_t	exit;
 	pthread_mutex_t	write;
 	pthread_mutex_t	meals_eaten;
 	pthread_mutex_t	time_check;
@@ -85,15 +96,15 @@ typedef struct s_info
 
 // check.c
 int		check_args(int argc, char **argv);
-int		check_death(t_info *info);
+int		check_end(t_info *info);
 int		check_enough(t_info *info);
 void	*check_satiated(t_info *info, t_philo *philo);
 
 // end.c
-int		end_monitor(t_info *info, t_philo *philo);
+int		end_monitor(t_info *info);
 int		end_threads(t_info *info);
 int		end_mutexes(t_info *info);
-int		end_program(t_info *info);
+int		end(t_info *info);
 
 // init.c
 int		init_info(char **argv, t_info *info);
@@ -122,6 +133,8 @@ void	*routine_philo(void *void_philo);
 // utils.c
 int		isnumber(char *str);
 int		ft_atoi(const char *str);
+int		min(int a, int b);
+int		max(int a, int b);
 void	print_meals(t_info *info, t_philo *philo, int count, long time);
 
 #endif

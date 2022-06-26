@@ -19,6 +19,7 @@ static int	philo_alone(t_info *info)
 	philo = info->philos[0];
 	if (pthread_create(&philo.thread, NULL, routine_philo, &philo))
 		return (philo_error("Error: phtread_create failed\n", FAILURE));
+	info->start_time = philo_time();
 	philo.starvation_time = info->time_die;
 	print_fork(info, &philo, philo.left_fork_id);
 	philo_sleep(info, info->time_die);
@@ -31,28 +32,26 @@ static int	philo_alone(t_info *info)
 
 static int	philo(t_info *info)
 {
-	int		i;
 	t_philo	*philos;
+	int		i;
 
-	i = -1;
 	philos = info->philos;
-	printf("%s%s%s%s\n", WHITE, DASH, DASH2, RESET);
-	info->start_time = philo_time();
+	printf("%s%s%s\n", GRAY, DASH, RESET);
 	if (info->nb_philo == 1)
 		return (philo_alone(info));
 	if (pthread_create(&info->satiated_id, NULL, routine_satiated, &info))
 		return (philo_error("Error: phtread_create failed\n", FAILURE));
 	if (pthread_create(&info->service_id, NULL, routine_service, &info))
 		return (philo_error("Error: phtread_create failed\n", FAILURE));
+	info->start_time = philo_time();
+	i = -1;
 	while (++i < info->nb_philo)
 	{
+		philos[i].last_meal_time = info->start_time;
 		if (pthread_create(&philos[i].thread, NULL, routine_philo, &philos[i]))
 			return (philo_error("Error: phtread_create failed\n", FAILURE));
-		pthread_mutex_lock(&info->time_check);
-		philos[i].last_meal_time = philo_time();
-		pthread_mutex_unlock(&info->time_check);
 	}
-	end_program(info);
+	end(info);
 	return (SUCCESS);
 }
 
