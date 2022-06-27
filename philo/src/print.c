@@ -108,6 +108,7 @@ void	print_meal(t_info *info, t_philo *philo, int count)
 
 	pthread_mutex_lock(&info->write);
 	pthread_mutex_lock(&info->starvation);
+	pthread_mutex_lock(&info->satiated);
 	if (check_end(info) && (info->satiated_nb <= info->nb_philo))
 	{
 		time = philo_time() - info->start_time;
@@ -117,6 +118,7 @@ void	print_meal(t_info *info, t_philo *philo, int count)
 		printf("%s%s\n%s", GRAY, DASH, RESET);
 		philo->starvation_time = time + info->time_die;
 	}
+	pthread_mutex_unlock(&info->satiated);
 	pthread_mutex_unlock(&info->starvation);
 	pthread_mutex_unlock(&info->write);
 }
