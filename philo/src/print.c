@@ -42,7 +42,7 @@ void	print_think(t_info *info, t_philo *philo)
 	long	time;
 	int		nb_meal;
 
-	nb_meal = philo->nb_meals + 1;
+	nb_meal = philo->nb_meals;
 	pthread_mutex_lock(&info->write);
 	pthread_mutex_lock(&info->satiated);
 	if (check_end(info) && (info->satiated_nb <= info->nb_philo))
@@ -63,7 +63,7 @@ void	print_sleep(t_info *info, t_philo *philo)
 	long	time;
 	int		nb_meal;
 
-	nb_meal = philo->nb_meals + 1;
+	nb_meal = philo->nb_meals;
 	pthread_mutex_lock(&info->write);
 	pthread_mutex_lock(&info->satiated);
 	if (check_end(info) && (info->satiated_nb <= info->nb_philo))
@@ -86,7 +86,7 @@ void	print_fork(t_info *info, t_philo *philo, int fork)
 	int		nb_meal;
 
 	nb_philo = info->nb_philo;
-	nb_meal = philo->nb_meals + 1;
+	nb_meal = philo->nb_meals;
 	pthread_mutex_lock(&info->write);
 	pthread_mutex_lock(&info->satiated);
 	if (check_end(info) && (info->satiated_nb <= nb_philo || nb_philo == 1))
