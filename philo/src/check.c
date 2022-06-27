@@ -71,10 +71,12 @@ void	*check_satiated(t_info *info, t_philo *philo)
 	pthread_mutex_lock(&info->satiated);
 	if (philo->nb_meals == info->nb_meals_req && info->satiated_nb < nb_philo)
 	{
-		pthread_mutex_unlock(&info->meals_eaten);
 		info->satiated_nb++;
 		if (info->satiated_nb >= info->nb_philo)
+		{
+			pthread_mutex_unlock(&info->meals_eaten);
 			return (philo_unlock(&info->satiated));
+		}
 	}
 	pthread_mutex_unlock(&info->satiated);
 	pthread_mutex_unlock(&info->meals_eaten);
