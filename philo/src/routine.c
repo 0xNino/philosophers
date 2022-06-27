@@ -44,12 +44,11 @@ void	*routine_satiated(void *void_info)
 			pthread_mutex_lock(&info->exit);
 			info->end = 2;
 			pthread_mutex_unlock(&info->exit);
-			break ;
+			return (philo_unlock(&info->satiated));
 		}
 		pthread_mutex_unlock(&info->satiated);
 		philo_sleep(info, 5);
 	}
-	pthread_mutex_unlock(&info->satiated);
 	return (SUCCESS);
 }
 
